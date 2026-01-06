@@ -1,0 +1,25 @@
+{
+  "name": "sameer_typescript",
+  "version": "1.0.0",
+  "main": "Test1.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sameer-Programmer/Sameer_TypeScript_Progress.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Sameer-Programmer/Sameer_TypeScript_Progress/issues"
+  },
+  "homepage": "https://github.com/Sameer-Programmer/Sameer_TypeScript_Progress#readme",
+  "description": "",
+  "devDependencies": {
+    "@types/node": "^25.0.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}
