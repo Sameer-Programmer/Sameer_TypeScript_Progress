@@ -10,6 +10,6 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["*.ts"],
+  "include": ["*.ts", "Folder/Test1.ts", "Folder/Test2.ts", "Folder/Test3.ts", "Folder/Test4.ts"],
   "exclude": ["node_modules"]
 }
