@@ -1,6 +1,5 @@
-var  i  = 0;
-
-do {
-console .log (i)
-i++
-}while (i<10);
+let i : number = 0; // initialization 
+while (i<=10){
+    console.log(i)
+    i++;
+}
