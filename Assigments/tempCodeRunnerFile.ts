@@ -1,9 +1,14 @@
-let num1 = 5;
-let result = 1;
-let i =1;
+/*Loop
+Reverse a number 
+*/
 
-while (i<=num1){
-    result = result * i
-    i++;
+let value = 123;
+let reverse = 0;
+
+
+while(value >0 ){
+   let lastdigit = value % 10;
+   reverse = lastdigit*0 +lastdigit
+   value = value /10;
 }
-console.log (result)
+console.log(reverse)

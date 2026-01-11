@@ -2,14 +2,14 @@
 Reverse a number 
 */
 
-let value = 123;
-let reverse = 0;
+let value1 = 123;
+let reverse1 = 0;
 
 
-while(value >0 ){
-   let lastdigit = value % 10;
-   reverse = lastdigit*0 +lastdigit
-   value = value /10;
+while(value1 >0 ){
+   let lastdigit = value1 % 10;
+   reverse1= reverse1*10 +lastdigit
+   value1 = Math.floor(value1 /10);
 }
-console.log(reverse)
+console.log(reverse1)
 
