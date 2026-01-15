@@ -1,3 +1,5 @@
+
+// call back function 
 function m1(Patient_age :number){
     console.log(Patient_age)
 }
