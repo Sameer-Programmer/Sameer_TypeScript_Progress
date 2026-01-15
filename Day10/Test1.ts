@@ -4,8 +4,22 @@
 - The values can be of same data type or different data types
 - index starts from zero
 - Arrays can be declared using `[]`
--or the generic `Array<T>` type
+- or the generic `Array<T>` type
 - Arrays are an ordered collection of elements 
+- in Typescript or Javascript array is dynamic
 
 */
+
+
+let names:string[]=[];  //array declarration 
+
+// Array -Initializatio 
+
+/*names[0] ="sameer";
+names[1] ="imran";
+*/
+
+let names1 :string [] = ["sameer","imran"];
+console.log(names1);
+
 
