@@ -22,4 +22,15 @@ names[1] ="imran";
 let names1 :string [] = ["sameer","imran"];
 console.log(names1);
 
+let data: Array<string> = ["sameer", "Imran"]
+
+
+console.log(data)
+
+let mixeddata: Array<any> = ["sameer", "Imran", 1, true]
+console.log(mixeddata)
+
+
+let  twodata : Array < number | string> = ["sameer" , 1]
+console.log(twodata)
 
