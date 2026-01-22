@@ -15,10 +15,10 @@ To Perform certain action an Method is required
 
 
 Different ways to create the Object 
-- using `object` type - Directly define the value for variable (JS/TS)
-- inline Type Object - we also define the data type of the key (TS)
-- Using type aliases (JS/TS)
-- using the Class
+-1 using `object` type - Directly define the value for variable (JS/TS)
+-2 inline Type Object - we also define the data type of the key (TS)
+-3 Using type aliases (JS/TS)
+-4 using the Class
 
 // using 'object' type - directly define the values for variable 
 
