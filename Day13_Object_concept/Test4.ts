@@ -29,8 +29,17 @@ let candidate : additional =  {
 candidate. getcontactinfo();
 
 
+//TypeScript checks types, JavaScript stores 
+// values. Phone numbers fit safely but should be strings by design.
 
+/*
+6️⃣ Interview-Ready Answer 🧠🔥
 
+“TypeScript does not store data; it only performs type checking at compile time.
+At runtime, JavaScript stores numbers using a 64-bit floating-point format.
+Phone numbers are safe within this range, but we usually store 
+them as strings because they are identifiers, not values used for calculations.”
+*/
 
 
 
