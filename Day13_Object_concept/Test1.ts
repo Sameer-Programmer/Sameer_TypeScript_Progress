@@ -22,12 +22,30 @@ Different ways to create the Object
 
 // using 'object' type - directly define the values for variable 
 
+In TypeScript, the type object is a very generic type.
+
+👉 It only tells the compiler:
+
+“This value is a non-primitive object.”
+
+It does NOT describe:
+
+what keys exist
+
+what methods exist
+
+what parameters methods take
+
+So TypeScript blocks access to methods for safety.
+
 */
 
 
 // if we specify the object keyword 
 //we can create only Variables with key and value pair -properties but not method 
 //Note : if you add the object type infromt of object -- out of object we can not call mehthods 
+
+
 let employee  =
 { name : "sameer",
  age : 30,
@@ -37,11 +55,18 @@ let employee  =
  }
 };
 
+// using the dot notation 
+
 employee.getdetails();
 
+// my doubt is why this drawback in typescript if we mention type object we are not able to access
+// the mthods out side of object 
 
 
+// Approach -2  accessing the object with bracket notation 
+// we can add 
+console.log(employee["name"], employee["age"])
+// Modify the value
+employee.age = 31;
 
-
-
-
+console.log(employee["name"], employee["age"])
