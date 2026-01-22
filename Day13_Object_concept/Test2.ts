@@ -29,3 +29,6 @@ let Car: {
   }
 };
 Car.getSummary();
+
+
+// Problem with Inline Type object is Need to Repeatthe Structure of every Object 
