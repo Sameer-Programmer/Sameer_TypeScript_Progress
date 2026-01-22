@@ -35,6 +35,23 @@ book2.getinfo();
 - in Implementation Do not use arraow function because arrow function does not have their
 own this key words 
 - after the method is over do not use semicoloum ;
+=============================
 
+/*
+Things to remember about Objects in TypeScript
 
+1. Declare an object type using:
+   key word - type ObjectName = { ... }
+
+2. While declaring the object type, we can use an arrow function:
+   getDetails: () => void;
+
+3. While implementing the method, DO NOT use an arrow function
+   if you want to use the `this` keyword.
+   → Arrow functions do NOT have their own `this`.
+
+4. A comma (,) must be used after every property.
+
+5. While accessing object properties inside a method,
+   always use the `this` keyword.
 */
