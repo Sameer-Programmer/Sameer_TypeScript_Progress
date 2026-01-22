@@ -12,7 +12,7 @@ let bike :vehicle = {
     }
 }
 
-    let car :vehicle = {
+let car :vehicle = {
     name : " GrandVistara",
     price : 12000,
     display2 : function(){
