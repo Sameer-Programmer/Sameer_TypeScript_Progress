@@ -11,6 +11,9 @@ Optional parameters must come after required ones.
 Static variables and methods belong to the class, not individual objects, 
 are shared across all instances, and are accessed using the class name.
 Static methods can access only static members.
+Rule to remember forever:
+
+Static methods must be declared inside the class and called using the class name.
 
 🧠 One VERY IMPORTANT RULE you already followed (nice!)
 
@@ -78,6 +81,11 @@ class Nalashaa {
                 return Nalashaa.manager;
              }
 
+             static changeManager(newManager: string):void {
+                    Nalashaa.manager = newManager;
+}
+
+
 
 }
 
@@ -95,6 +103,11 @@ Nalashaa.getManagerDetails();
 
 console.log(Nalashaa.displayManagerDetails());
 
+
+console.log("change the Manager ")
+Nalashaa.changeManager("Alex");
+
+Nalashaa.getManagerDetails();
 //now Teach me  from groundlevel 
 /*
 I have understoodd -
