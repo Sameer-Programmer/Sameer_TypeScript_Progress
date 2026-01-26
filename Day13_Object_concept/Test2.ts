@@ -17,7 +17,7 @@ let Car: {
   name: string;
   model: number;
   safetyGrade: string;
-  getSummary: () => void; // arrow function returning nothing
+  getSummary ():  void; // arrow function returning nothing
 } = {
   name: "AUDI",
   model: 2025,
