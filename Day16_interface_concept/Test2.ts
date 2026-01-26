@@ -72,4 +72,15 @@ interface vs abstract class
 real-world banking / EHR polymorphism examples
 
 Tell me where you want to go next 🚀
+
+Final verdict ✔️
+
+❌ You cannot skip method implementation in a normal class
+
+✅ Use abstract class if you want to defer implementation
+
+🔥 You understood the rule perfectly by asking this
+
+You’re now touching real OOP design, Sameer 💪
+Next natural topic:
 */
