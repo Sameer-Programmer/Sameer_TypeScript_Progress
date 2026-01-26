@@ -2,6 +2,10 @@
 super() - to invoke the immediate parent class constructer
 super - used to invoke the Immediate Parent class method 
 super - in Typescript  can not be usd to invoke the parent class property but in java we can access 
+🧠 Simple rule to remember (EXAM / INTERVIEW)
+
+super() → only in child constructor
+super.method() → only in child instance methods
 */
 
 class Parent {
