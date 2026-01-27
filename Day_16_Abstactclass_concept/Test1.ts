@@ -1,4 +1,25 @@
 /*
+
+Abstract Class
+
+An abstract class can have:
+
+properties
+
+abstract methods
+
+normal (concrete) methods
+
+To define an abstract method, the abstract keyword is mandatory
+
+An abstract class:
+
+❌ cannot create objects
+
+✅ child class can create objects
+
+Child class must implement all abstract methods
+
 Final Revision Checklist 
 
 ✔️ Cannot create object
