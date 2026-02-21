@@ -3,13 +3,14 @@
     "target": "ES2020",
     "module": "commonjs",
     "lib": ["ES2020"],
-    "outDir": "./",
+    "types": ["node"], 
+    "outDir": "./dist",
     "rootDir": "./",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["*.ts", "Folder/Test1.ts", "Folder/Test2.ts", "Folder/Test3.ts", "Folder/Test4.ts"],
+  "include": ["**/*.ts"],
   "exclude": ["node_modules"]
 }

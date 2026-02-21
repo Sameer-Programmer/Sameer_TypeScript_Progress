@@ -1,3 +1,3 @@
-let a :number =20
-let b :number =20
-console.log(a+b);
+let ax :number =20
+let bx :number =20
+console.log(ax+bx);

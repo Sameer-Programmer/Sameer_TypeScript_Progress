@@ -21,5 +21,5 @@ function m3 (x1:number , y1:number):number {
 
 }
 
-var result = m3(1,5)
-console.log(result);
+var Testresult = m3(1,5)
+console.log(Testresult);

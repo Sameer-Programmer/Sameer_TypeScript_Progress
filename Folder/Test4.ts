@@ -1,2 +1,2 @@
-let  name :string = "sameer";
-console.log(name)
+let  qname :string = "sameer";
+console.log(qname)

@@ -1,4 +1,7 @@
-// named function with oprional Parameters 
+
+
+
+//  Named Function with Default Parameters.
 function launch (URL : string = "google" , 
                  browser : string = "chrome"){
     console.log(URL);
