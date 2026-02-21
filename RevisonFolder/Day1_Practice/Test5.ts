@@ -7,6 +7,9 @@ When working with loops, we need to provide 3 things:
 2. Condition
 3. Increment (or Decrement)
 
+ Use while when you want to check the condition before execution.
+ Use do-while when you need the loop to run at least once.
+
 */
 
 // whileLoop --keep on Executing untill the condition is true 
@@ -20,3 +23,32 @@ while(i<=6){
 }
 
 
+// do whileloop 
+
+
+//syntax 
+
+/*
+do {
+  
+}while(condiiton )
+
+*/
+
+let j = 6 ;
+
+do {
+  console.log(j) //6
+  j++; //7
+}while(j<=7)
+
+
+/*
+//output
+Output:
+
+176 ms
+6
+7
+
+*/
