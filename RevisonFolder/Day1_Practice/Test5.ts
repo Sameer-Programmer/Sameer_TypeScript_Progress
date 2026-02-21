@@ -52,3 +52,20 @@ Output:
 7
 
 */
+
+
+for (let k =0 ; k<10; k++){
+
+
+
+if(k==5){
+  continue  // it act as jump statement 
+}
+
+if(k==8){
+  break;    // Loop will exit here 
+}
+
+console.log(k)
+
+}
