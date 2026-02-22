@@ -7,7 +7,7 @@
 - or the generic `Array<T>` type
 - Arrays are an ordered collection of elements 
 - in Typescript or Javascript array is dynamic
-
+- In Typescript - Array size is not fixed 
 */
 
 

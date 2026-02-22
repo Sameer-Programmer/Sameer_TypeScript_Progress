@@ -1,3 +1,7 @@
+
+// Passing an Array to a Function
+
+
 let words : string [] = ["sameer" , 'j']
 
 let result : string[] = [];
