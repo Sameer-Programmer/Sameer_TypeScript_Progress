@@ -45,3 +45,25 @@ function searchElement(nums:number[] , target : number) : boolean {
 
 
 console.log(searchElement(nums,40))
+
+
+//Function Returning an Array
+
+let givenData : string [] = ["Sameer", "Imran"]
+let wantedData : string [] = [];
+
+
+function CapitalWords(givenData : string []  ) : string[] {
+  let result :string [] = []
+  let i = 0
+for (let value of givenData){
+result[i]= value.toUpperCase()    // it brings single string 
+i++
+}
+
+return result
+
+}
+
+console.log(CapitalWords(givenData))
+

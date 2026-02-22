@@ -24,6 +24,6 @@ for(let i in mix ){
 console.log("----------------")
 
 for (let value of mix){
-    console.log(value)
+    console.log(value)     
 }
 //tsx RevisonFolder\Day3_ArrayConncept\Test01.ts
