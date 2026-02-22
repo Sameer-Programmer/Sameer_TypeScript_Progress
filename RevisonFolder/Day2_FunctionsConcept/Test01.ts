@@ -6,6 +6,8 @@
 - Restparameter 
 -Optional parameters 
 - default parameters 
+-callback function 
+- Function Overloading 
 
 */
 

@@ -1,0 +1,39 @@
+
+function add(a:number , b:number){
+  return a+b
+}
+
+function multiply(a:number , b:number){
+ return a*b
+}
+
+function result(calcy : string ,callback1 : (a:number , b:number)=>number ,
+       callback2 : (a:number , b:number)=>number ){
+        console.log(calcy )
+        console.log(callback1(1,2)  )                                    
+        console.log(callback2(1,2)  )                                  
+}
+
+result("calcy",add,multiply)
+
+
+/*
+Here we are pasing values in two call backs right insted i want to pass  single time but the two calls should work 
+
+Here we are passing the above add function as a call back 
+things to rember 
+
+--- callback : -> function we are passing as arguement inside aanother function 
+-- function is 
+function add(a:number , b:number){
+  return a+b
+
+  we  should not use function keyword inseted use => goes to operator and definitly mention the return type void or retun type 
+  like this below 
+  callback1 : (a:number , b:number)=>number , inside another function if we pass another function it always looks for return type 
+  so we have to specofy definitly 
+}
+*/
+
+
+
