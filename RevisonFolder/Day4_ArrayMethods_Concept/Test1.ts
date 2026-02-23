@@ -7,6 +7,7 @@ unshift() - to add at First element
 concat () - to add two arrays 
 indexOf(1) Returns the index of the first occurrence of a value, or -1 if not found.
 includes() - if found true - if not false 
+toString() -- To convert Array to string 
 slice () - From the Original array if we need some part with index 
 slice ()
 

@@ -37,3 +37,8 @@ console.log(elements2.indexOf(1))
 
 console.log(elements2.includes(1))  // if found true - if not found -- false 
 console.log(elements2.includes(11))
+
+
+let elements3 : (number|string|boolean)[] = [1, "sameer", true, "Apple","Banana" ]
+
+console.log(elements3.toString())
