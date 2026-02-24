@@ -22,7 +22,11 @@ elements2.splice(1,2)
 // from index 1 delete starts and anothe 2 indicates two items u are going to delete from tht index 
 console.log(elements2)
 
+// output = [ 1, 'Apple', 'Banana' ]
+
 //now to add 
+
+/*
 
 elements2.splice(1,0,"Pine" ) // After 1 I am going to add , 0 means no deted 
 console.log(elements2)
@@ -42,3 +46,9 @@ console.log(elements2.includes(11))
 let elements3 : (number|string|boolean)[] = [1, "sameer", true, "Apple","Banana" ]
 
 console.log(elements3.toString())
+
+*/
+
+let elementsz= ["sameer", "Imran" ,"Peera" ,"Munni "]
+
+console.log(elementsz.splice(0,2)) // my expected peera and munni 

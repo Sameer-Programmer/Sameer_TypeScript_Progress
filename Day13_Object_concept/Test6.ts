@@ -4,6 +4,12 @@
 // objects are independent 
 // derived from the single class
 
+/*
+4. Using Classes (JS/TS)
+Blueprint for creating multiple objects with same structure and behavior.
+
+*/
+
 
 class nalashaa {
   nameofEmployee : string;
