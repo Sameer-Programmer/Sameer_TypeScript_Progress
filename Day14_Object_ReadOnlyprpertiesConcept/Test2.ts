@@ -5,8 +5,14 @@ we have multiple signature of constructer Overloading  but single implementation
 */
 class Calicy {
 
+    //Part 1 ---Here we are assing value through constructer
+    //Part 2 --Here we passing values through object reference inside method
+    // Both are independent - dont confuse 
+
     constructor (); // default 
     constructor (a:number, b:number);// Parameterized constructer 
+
+    // Implementation 
 
     constructor(a?:number , b?:number){
         if((a!=undefined) && (b!=undefined)){
