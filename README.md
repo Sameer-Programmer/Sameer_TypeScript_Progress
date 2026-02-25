@@ -1,5 +1,7 @@
 # Sameer_TypeScript_Progress
 
+![TypeScript](https://img.shields.io/badge/-TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white) ![Node.js](https://img.shields.io/badge/-Node.js-339933?style=flat-square&logo=node.js&logoColor=white) ![GitHub](https://img.shields.io/badge/-GitHub-181717?style=flat-square&logo=github&logoColor=white)
+
 ## A Structured Journey Through TypeScript Learning
 
 Welcome to `Sameer_TypeScript_Progress`! This repository documents my personal learning journey and revision process for TypeScript. It's designed to be a structured resource, organized day-by-day, covering fundamental to advanced TypeScript concepts. Whether you're a beginner looking to start with TypeScript or an experienced developer wanting to refresh your knowledge, this repository aims to provide clear, concise examples and practical exercises.
