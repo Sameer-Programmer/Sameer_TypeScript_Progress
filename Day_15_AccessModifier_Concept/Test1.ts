@@ -26,7 +26,7 @@ class Basapura {
 class Maruti_layout extends Basapura{
 
     name = "Zameer";
-    //age = 30 not accepted dur to private 
+    //age = 30;// not accepted dur to private 
     gender = "Female"
 
     displaygender(): void {
