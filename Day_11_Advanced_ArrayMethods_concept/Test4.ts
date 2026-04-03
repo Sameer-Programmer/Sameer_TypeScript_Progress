@@ -23,6 +23,18 @@ array.filter((element, index, array) => {
 
 // Note Store the result in a New Array 
 
+---------------------------------
+IMPORTANT RULES
+---------------------------------
+
+1. filter() always returns an array.
+2. It keeps elements where condition is TRUE.
+3. If condition is FALSE → element is removed.
+4. If nothing matches → returns empty array [].
+5. Always store filter() result in a variable.
+*/
+
+
 
 */
 
@@ -110,16 +122,6 @@ Output:
 
 
 /*
----------------------------------
-IMPORTANT RULES
----------------------------------
-
-1. filter() always returns an array.
-2. It keeps elements where condition is TRUE.
-3. If condition is FALSE → element is removed.
-4. If nothing matches → returns empty array [].
-5. Always store filter() result in a variable.
-*/
 
 
 /*
