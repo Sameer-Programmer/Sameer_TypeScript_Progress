@@ -1,0 +1,1503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Playwright File Handling — A Library Story</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=JetBrains+Mono:wght@400;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #0e0f14;
+    --surface:   #161820;
+    --surface2:  #1e2030;
+    --border:    #2a2d3e;
+    --accent:    #7c6af7;
+    --accent2:   #f7c26a;
+    --accent3:   #5de8c1;
+    --red:       #f76a7c;
+    --text:      #e8eaf0;
+    --muted:     #8b8fa8;
+    --junior:    #5de8c1;
+    --senior:    #f7c26a;
+    --code-bg:   #11121a;
+    --pdf-col:   #f76a7c;
+    --txt-col:   #5de8c1;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE TEXTURE OVERLAY ─────────────────────────────── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 0; opacity: 0.4;
+  }
+
+  /* ── HERO ──────────────────────────────────────────────── */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    text-align: center;
+    padding: 80px 24px 60px;
+    overflow: hidden;
+  }
+
+  .hero-glow {
+    position: absolute;
+    width: 700px; height: 700px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(124,106,247,0.18) 0%, transparent 70%);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    animation: pulse 6s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
+    50%       { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }
+  }
+
+  .badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(124,106,247,0.15);
+    border: 1px solid rgba(124,106,247,0.35);
+    color: var(--accent);
+    font-size: 12px; font-weight: 600;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 6px 16px; border-radius: 100px;
+    margin-bottom: 28px;
+    animation: fadeDown 0.6s ease both;
+  }
+
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.4rem, 6vw, 4.5rem);
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 20px;
+    animation: fadeDown 0.7s 0.1s ease both;
+  }
+
+  .hero h1 span.hl-purple { color: var(--accent); }
+  .hero h1 span.hl-gold   { color: var(--accent2); }
+  .hero h1 span.hl-teal   { color: var(--accent3); }
+
+  .hero p {
+    font-size: 1.1rem; color: var(--muted);
+    max-width: 560px; margin: 0 auto 40px;
+    animation: fadeDown 0.7s 0.2s ease both;
+  }
+
+  .hero-tags {
+    display: flex; flex-wrap: wrap; gap: 10px;
+    justify-content: center;
+    animation: fadeDown 0.7s 0.3s ease both;
+  }
+
+  .hero-tags span {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 12px; padding: 4px 12px;
+    border-radius: 6px; font-family: 'JetBrains Mono', monospace;
+  }
+
+  .scroll-hint {
+    position: absolute; bottom: 32px;
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    color: var(--muted); font-size: 12px; letter-spacing: 0.1em;
+    text-transform: uppercase; animation: fadeIn 1s 1s ease both;
+  }
+
+  .scroll-hint .arrow {
+    width: 1px; height: 40px;
+    background: linear-gradient(to bottom, transparent, var(--accent));
+    animation: arrowBounce 1.5s ease-in-out infinite;
+  }
+
+  @keyframes arrowBounce {
+    0%, 100% { transform: scaleY(1); opacity: 0.5; }
+    50%       { transform: scaleY(1.3); opacity: 1; }
+  }
+
+  /* ── MAIN CONTENT ──────────────────────────────────────── */
+  .container {
+    max-width: 900px; margin: 0 auto;
+    padding: 0 24px 100px;
+  }
+
+  /* ── SECTION LABEL ─────────────────────────────────────── */
+  .section-label {
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 32px; margin-top: 64px;
+  }
+
+  .section-num {
+    width: 40px; height: 40px;
+    background: linear-gradient(135deg, var(--accent), #5b4ed4);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem; font-weight: 700; color: #fff;
+    flex-shrink: 0;
+  }
+
+  .section-label h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem; font-weight: 700;
+    color: var(--text);
+  }
+
+  .section-label h2 em {
+    font-style: italic; color: var(--accent2);
+  }
+
+  /* ── CONVERSATION BUBBLES ──────────────────────────────── */
+  .chat-thread {
+    display: flex; flex-direction: column;
+    gap: 20px;
+  }
+
+  .bubble-wrap {
+    display: flex; gap: 14px; align-items: flex-start;
+    opacity: 1; transform: translateY(0);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+
+  .bubble-wrap.visible {
+    opacity: 1; transform: translateY(0);
+  }
+
+  .bubble-wrap.junior { flex-direction: row; }
+  .bubble-wrap.senior { flex-direction: row-reverse; }
+
+  .avatar {
+    width: 42px; height: 42px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+    font-weight: 700;
+  }
+
+  .avatar.j {
+    background: rgba(93,232,193,0.15);
+    border: 1.5px solid rgba(93,232,193,0.4);
+    color: var(--junior);
+  }
+
+  .avatar.s {
+    background: rgba(247,194,106,0.15);
+    border: 1.5px solid rgba(247,194,106,0.4);
+    color: var(--senior);
+  }
+
+  .bubble-inner { flex: 1; }
+
+  .bubble-name {
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .junior .bubble-name { color: var(--junior); }
+  .senior .bubble-name { color: var(--senior); text-align: right; }
+
+  .bubble {
+    padding: 16px 20px;
+    border-radius: 16px;
+    font-size: 0.95rem; line-height: 1.75;
+    position: relative;
+  }
+
+  .junior .bubble {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top-left-radius: 4px;
+  }
+
+  .senior .bubble {
+    background: linear-gradient(135deg, rgba(247,194,106,0.08), rgba(124,106,247,0.08));
+    border: 1px solid rgba(247,194,106,0.2);
+    border-top-right-radius: 4px;
+    text-align: left;
+  }
+
+  .bubble strong { color: var(--accent2); font-weight: 600; }
+  .bubble .teal  { color: var(--accent3); font-weight: 600; }
+  .bubble .purp  { color: var(--accent);  font-weight: 600; }
+  .bubble .red   { color: var(--red);     font-weight: 600; }
+
+  /* inline code inside bubbles */
+  .bubble code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82em;
+    background: rgba(124,106,247,0.15);
+    color: var(--accent3);
+    padding: 1px 6px; border-radius: 4px;
+  }
+
+  /* ── CODE BLOCKS ───────────────────────────────────────── */
+  .code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    margin: 8px 0 4px;
+    font-size: 0.82rem;
+  }
+
+  .code-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 16px;
+    background: rgba(255,255,255,0.03);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .code-header .dots { display: flex; gap: 6px; }
+  .code-header .dots span {
+    width: 10px; height: 10px; border-radius: 50%;
+  }
+  .code-header .dots span:nth-child(1) { background: #f76a7c; }
+  .code-header .dots span:nth-child(2) { background: #f7c26a; }
+  .code-header .dots span:nth-child(3) { background: #5de8c1; }
+
+  .code-header .lang {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--muted);
+    letter-spacing: 0.06em;
+  }
+
+  .code-body {
+    padding: 16px 20px;
+    overflow-x: auto;
+  }
+
+  .code-body pre {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem; line-height: 1.7;
+    color: var(--text);
+    white-space: pre;
+  }
+
+  .kw  { color: #c792ea; }   /* keyword */
+  .fn  { color: #82aaff; }   /* function */
+  .str { color: #c3e88d; }   /* string */
+  .cm  { color: #546e7a; font-style: italic; } /* comment */
+  .num { color: #f78c6c; }   /* number */
+  .var { color: #5de8c1; }   /* variable */
+  .op  { color: #89ddff; }   /* operator */
+
+  /* ── ANALOGY CARD ──────────────────────────────────────── */
+  .analogy-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px; margin: 16px 0;
+  }
+
+  .analogy-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 18px;
+    display: flex; align-items: flex-start; gap: 14px;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+
+  .analogy-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--accent);
+  }
+
+  .analogy-card .icon {
+    font-size: 28px; line-height: 1;
+    flex-shrink: 0; margin-top: 2px;
+  }
+
+  .analogy-card .info .label {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 2px;
+  }
+
+  .analogy-card .info .real  { font-weight: 600; color: var(--text); font-size: 0.9rem; }
+  .analogy-card .info .code_ { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--accent3); }
+
+  /* ── FLOW DIAGRAM ──────────────────────────────────────── */
+  .flow {
+    display: flex; align-items: center;
+    gap: 0; flex-wrap: wrap;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin: 16px 0;
+    overflow-x: auto;
+  }
+
+  .flow-step {
+    display: flex; flex-direction: column; align-items: center;
+    text-align: center; gap: 6px; flex-shrink: 0;
+  }
+
+  .flow-step .f-icon {
+    width: 52px; height: 52px;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+  }
+
+  .flow-step .f-code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; color: var(--accent3);
+    max-width: 80px; line-height: 1.3;
+  }
+
+  .flow-step .f-name {
+    font-size: 10px; color: var(--muted); max-width: 80px; line-height: 1.3;
+  }
+
+  .flow-arrow {
+    color: var(--muted); font-size: 18px;
+    padding: 0 8px; margin-bottom: 24px;
+    flex-shrink: 0;
+  }
+
+  /* ── SIDE BY SIDE TABLE ────────────────────────────────── */
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    margin: 16px 0;
+    font-size: 0.88rem;
+  }
+
+  .compare-table thead tr th {
+    padding: 14px 18px;
+    text-align: left;
+    font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
+    font-weight: 700;
+  }
+
+  .compare-table thead tr th:nth-child(1) { background: var(--surface2); color: var(--muted); width: 120px; }
+  .compare-table thead tr th:nth-child(2) { background: rgba(247,106,124,0.15); color: var(--pdf-col); }
+  .compare-table thead tr th:nth-child(3) { background: rgba(93,232,193,0.12); color: var(--txt-col); }
+
+  .compare-table tbody tr td {
+    padding: 12px 18px;
+    border-top: 1px solid var(--border);
+    vertical-align: top;
+  }
+
+  .compare-table tbody tr td:nth-child(1) {
+    background: var(--surface2);
+    color: var(--muted);
+    font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+
+  .compare-table tbody tr td:nth-child(2) { background: rgba(247,106,124,0.05); }
+  .compare-table tbody tr td:nth-child(3) { background: rgba(93,232,193,0.04); }
+
+  .compare-table pre {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.76rem; line-height: 1.65;
+    color: var(--text); white-space: pre-wrap;
+  }
+
+  /* ── KEY DIFF CARDS ────────────────────────────────────── */
+  .diff-cards {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 16px; margin: 16px 0;
+  }
+
+  .diff-card {
+    border-radius: 14px; padding: 20px;
+  }
+
+  .diff-card.pdf-card {
+    background: rgba(247,106,124,0.07);
+    border: 1px solid rgba(247,106,124,0.25);
+  }
+
+  .diff-card.txt-card {
+    background: rgba(93,232,193,0.06);
+    border: 1px solid rgba(93,232,193,0.25);
+  }
+
+  .diff-card h4 {
+    font-size: 14px; font-weight: 700; margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .diff-card.pdf-card h4 { color: var(--pdf-col); }
+  .diff-card.txt-card h4 { color: var(--txt-col); }
+
+  .diff-card ul {
+    list-style: none; display: flex; flex-direction: column; gap: 8px;
+  }
+
+  .diff-card ul li {
+    font-size: 0.875rem; color: var(--muted);
+    padding-left: 18px; position: relative; line-height: 1.6;
+  }
+
+  .diff-card.pdf-card ul li::before { content: '→'; position: absolute; left: 0; color: var(--pdf-col); }
+  .diff-card.txt-card ul li::before { content: '→'; position: absolute; left: 0; color: var(--txt-col); }
+
+  .diff-card ul li strong { color: var(--text); font-weight: 600; }
+
+  /* ── TAKEAWAY CARDS ────────────────────────────────────── */
+  .takeaways {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 14px; margin-top: 16px;
+  }
+
+  .takeaway-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
+    display: flex; gap: 14px; align-items: flex-start;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+
+  .takeaway-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(124,106,247,0.5);
+  }
+
+  .takeaway-card .t-icon { font-size: 24px; flex-shrink: 0; margin-top: 2px; }
+  .takeaway-card .t-title { font-weight: 600; color: var(--text); margin-bottom: 4px; font-size: 0.9rem; }
+  .takeaway-card .t-desc  { font-size: 0.82rem; color: var(--muted); line-height: 1.6; }
+
+  /* ── FOOTER ────────────────────────────────────────────── */
+  .footer {
+    text-align: center;
+    padding: 60px 24px 80px;
+    border-top: 1px solid var(--border);
+    margin-top: 80px;
+  }
+
+  .footer p {
+    font-size: 0.9rem; color: var(--muted); margin-bottom: 16px;
+  }
+
+  .footer .tags {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    justify-content: center;
+  }
+
+  .footer .tags span {
+    background: rgba(124,106,247,0.12);
+    border: 1px solid rgba(124,106,247,0.25);
+    color: var(--accent);
+    font-size: 12px; padding: 4px 12px;
+    border-radius: 100px;
+  }
+
+  /* ── DIVIDER ───────────────────────────────────────────── */
+  .divider {
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--border), transparent);
+    margin: 48px 0;
+  }
+
+  /* ── ANIMATIONS ────────────────────────────────────────── */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  /* ── SCROLLBAR ─────────────────────────────────────────── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* ── ASSERTION LAYERS ─────────────────────────────────── */
+  .assert-section { display: flex; flex-direction: column; gap: 4px; }
+
+  .assert-layer-title {
+    font-size: 12px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--accent2);
+    padding: 8px 0 2px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 4px;
+  }
+
+  /* ── RESPONSIVE ────────────────────────────────────────── */
+  @media (max-width: 640px) {
+    .diff-cards { grid-template-columns: 1fr; }
+    .flow { gap: 4px; }
+    .compare-table { font-size: 0.78rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── HERO ──────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="badge">🏛️ A Library Story</div>
+  <h1>
+    Downloading &amp; Validating<br>
+    <span class="hl-purple">PDF</span> &amp; <span class="hl-teal">TXT</span> Files<br>
+    in <span class="hl-gold">Playwright</span>
+  </h1>
+  <p>A Junior asks. A Senior explains. Step by step — using a real world library story you will never forget.</p>
+  <div class="hero-tags">
+    <span>TypeScript</span>
+    <span>Playwright</span>
+    <span><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="58283c3e7528392a2b3d186976697669">[email&#160;protected]</a></span>
+    <span>fs.readFileSync</span>
+    <span>fileBuffer</span>
+  </div>
+  <div class="scroll-hint">
+    <span>scroll</span>
+    <div class="arrow"></div>
+  </div>
+</section>
+
+<!-- ── MAIN ───────────────────────────────────────────────── -->
+<main class="container">
+
+  <!-- SECTION 1: THINK -->
+  <div class="section-label">
+    <div class="section-num">1</div>
+    <h2>Think — <em>What is the Problem?</em></h2>
+  </div>
+
+  <div class="chat-thread">
+    <div class="bubble-wrap junior">
+      <div class="avatar j">👦</div>
+      <div class="bubble-inner">
+        <div class="bubble-name">Junior Dev</div>
+        <div class="bubble">
+          Hey, I need to automate file downloads in Playwright and then read what's inside them. But I don't even know where to start... Is it hard? 😅
+        </div>
+      </div>
+    </div>
+
+    <div class="bubble-wrap senior">
+      <div class="avatar s">🧑‍💻</div>
+      <div class="bubble-inner">
+        <div class="bubble-name">Senior Dev</div>
+        <div class="bubble">
+          Not hard at all! Let me break it down. You basically need to do <strong>4 things</strong> for any file type:<br><br>
+          ✅ &nbsp;Download the file from a website<br>
+          ✅ &nbsp;Check the file actually exists on disk<br>
+          ✅ &nbsp;Read what is inside it<br>
+          ✅ &nbsp;Validate the content using <code>expect()</code><br><br>
+          But before writing a single line — always check your config files first!
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- SECTION 2: REQUIREMENTS -->
+  <div class="section-label">
+    <div class="section-num">2</div>
+    <h2>Requirements — <em>Config Files First!</em></h2>
+  </div>
+
+  <div class="chat-thread">
+    <div class="bubble-wrap junior">
+      <div class="avatar j">👦</div>
+      <div class="bubble-inner">
+        <div class="bubble-name">Junior Dev</div>
+        <div class="bubble">
+          Why do we check config files first? Can't I just start coding?
+        </div>
+      </div>
+    </div>
+
+    <div class="bubble-wrap senior">
+      <div class="avatar s">🧑‍💻</div>
+      <div class="bubble-inner">
+        <div class="bubble-name">Senior Dev</div>
+        <div class="bubble">
+          Trust me — skipping config checks costs you hours of debugging later. I learned the hard way! For this task we need 3 files to be correct:<br><br>
+          📌 &nbsp;<code>tsconfig.json</code> → needs <code>esModuleInterop: true</code><br>
+          📌 &nbsp;<code>package.json</code> → needs <code><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2e5e4a48035e4f5c5d4b6e1f001f001f">[email&#160;protected]</a></code> <span class="red">(NOT v2!)</span><br>
+          📌 &nbsp;<code>playwright.config.ts</code> → needs <code>timeout: 60000</code><br><br>
+          The <code>pdf-parse</code> version is the sneaky one — v2.x is ESM-based and <strong>conflicts</strong> with <code>"module": "commonjs"</code> in your tsconfig. Always use <span class="teal">v1.1.1</span>.
+        </div>
+      </div>
+    </div>
+
+    <div class="bubble-wrap junior">
+      <div class="avatar j">👦</div>
+      <div class="bubble-inner">
+        <div class="bubble-name">Junior Dev</div>
+        <div class="bubble">
+          Oh! So I uninstall and reinstall the right version in PowerShell like this?<br><br>
+          <div class="code-block">
+            <div class="code-header">
+              <div class="dots"><span></span><span></span><span></span></div>
+              <div class="lang">PowerShell</div>
+            </div>
+            <div class="code-body">
+              <pre><span class="cm"># PowerShell — run separately (no && support!)</span>
+npm uninstall pdf-parse
+npm install <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="176773713a6776656472572639263926">[email&#160;protected]</a></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bubble-wrap senior">
+      <div class="avatar s">🧑‍💻</div>
+      <div class="bubble-inner">
+        <div class="bubble-name">Senior Dev</div>
+        <div class="bubble">
+          Exactly! And note — PowerShell does NOT support <code>&&</code>, run them one by one. Now you are ready! 🎉
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- SECTION 3: VISUALIZE -->
+  <div class="section-label">
+    <div class="section-num">3</div>
+    <h2>Visualize — <em>The Library Story</em></h2>
+  </div>
+
+  <div class="chat-thread">
+    <div class="bubble-wrap junior">
+      <div class="avatar j">👦</div>
+      <div class="bubble-inner">
+        <div class="bubble-name">Junior Dev</div>
+        <div class="bubble">
+          I keep getting confused about <code>fileBuffer</code> and <code>pdfParse</code>. What are they actually doing?
+        </div>
+      </div>
+    </div>
+
+    <div class="bubble-wrap senior">
+      <div class="avatar s">🧑‍💻</div>
+      <div class="bubble-inner">
+        <div class="bubble-name">Senior Dev</div>
+        <div class="bubble">
+          Let me tell you a <strong>Library Story</strong> — you will never forget this! 📚<br><br>
+          Imagine you walk into a <strong>Library</strong>. The library has thousands of books on shelves. Now:
+
+          <div class="analogy-grid" style="margin-top:14px;">
+            <div class="analogy-card">
+              <div class="icon">🏛️</div>
+              <div class="info">
+                <div class="label">Real World</div>
+                <div class="real">Library</div>
+                <div class="code_">Hard Disk</div>
+              </div>
+            </div>
+            <div class="analogy-card">
+              <div class="icon">📍</div>
+              <div class="info">
+                <div class="label">Real World</div>
+                <div class="real">Shelf Number</div>
+                <div class="code_">downloadFilePath</div>
+              </div>
+            </div>
+            <div class="analogy-card">
+              <div class="icon">👦</div>
+              <div class="info">
+                <div class="label">Real World</div>
+                <div class="real">Library Boy</div>
+                <div class="code_">fs.readFileSync</div>
+              </div>
+            </div>
+            <div class="analogy-card">
+              <div class="icon">📖</div>
+              <div class="info">
+                <div class="label">Real World</div>
+                <div class="real">Book (raw pages)</div>
+                <div class="code_">0s and 1s (bytes)</div>
+              </div>
+            </div>
+            <div class="analogy-card">
+              <div class="icon">📦</div>
+              <div class="info">
+                <div class="label">Real World</div>
+                <div class="real">Reading Table</div>
+                <div class="code_">fileBuffer</div>
+              </div>
+            </div>
+            <div class="analogy-card">
+              <div class="icon">🔄</div>
+              <div class="info">
+                <div class="label">Real World</div>
+                <div class="real">Translator</div>
+                <div class="code_">pdfParse</div>
+              </div>
+            </div>
+          </div>
+
+          So the full story is: <strong>Library Boy</strong> goes to the <span class="teal">Shelf Number</span>, picks up the <strong>Book</strong> (raw 0s and 1s), brings it to the <span class="purp">Reading Table</span>, then the <strong>Translator</strong> reads it and gives you back <span class="teal">English</span>! ✅
+        </div>
+      </div>
+    </div>
+
+    <div class="bubble-wrap junior">
+      <div class="avatar j">👦</div>
+      <div class="bubble-inner">
+        <div class="bubble-name">Junior Dev</div>
+        <div class="bubble">
+          Oh! So <code>fs.readFileSync</code> is the Library Boy who goes to the file path, reads the raw data, and hands it over to <code>fileBuffer</code> as a container! That's brilliant! 🤩
+        </div>
+      </div>
+    </div>
+
+    <div class="bubble-wrap senior">
+      <div class="avatar s">🧑‍💻</div>
+      <div class="bubble-inner">
+        <div class="bubble-name">Senior Dev</div>
+        <div class="bubble">
+          YES! Exactly! And the name itself tells the story:<br><br>
+          <code>fs</code> = File System (the Library)<br>
+          <code>read</code> = reads the Book (raw bytes)<br>
+          <code>File</code> = it is a file<br>
+          <code>Sync</code> = waits until fully picked up before moving on<br><br>
+          Now here is the complete flow:
+          <div class="flow" style="margin-top:14px;">
+            <div class="flow-step">
+              <div class="f-icon">🏛️</div>
+              <div class="f-code">Hard Disk</div>
+              <div class="f-name">Library</div>
+            </div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">
+              <div class="f-icon">👦</div>
+              <div class="f-code">fs.readFileSync</div>
+              <div class="f-name">Library Boy</div>
+            </div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">
+              <div class="f-icon">📦</div>
+              <div class="f-code">fileBuffer</div>
+              <div class="f-name">Reading Table</div>
+            </div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">
+              <div class="f-icon">🔄</div>
+              <div class="f-code">pdfParse</div>
+              <div class="f-name">Translator</div>
+            </div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">
+              <div class="f-icon">✅</div>
+              <div class="f-code">pdfData.text</div>
+              <div class="f-name">English!</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bubble-wrap junior">
+      <div class="avatar j">👦</div>
+      <div class="bubble-inner">
+        <div class="bubble-name">Junior Dev</div>
+        <div class="bubble">
+          Wait — does a TXT file also need a Translator like <code>pdfParse</code>?
+        </div>
+      </div>
+    </div>
+
+    <div class="bubble-wrap senior">
+      <div class="avatar s">🧑‍💻</div>
+      <div class="bubble-inner">
+        <div class="bubble-name">Senior Dev</div>
+        <div class="bubble">
+          Great question! <strong>No!</strong> TXT file skips the Translator step completely.<br><br>
+          PDF is like a book written in <span class="red">alien language</span> — you need a translator to understand it.<br>
+          TXT is like a book written in <span class="teal">plain English</span> — you can read it directly!<br><br>
+          The only difference is you pass <code>'utf-8'</code> to <code>readFileSync</code> for TXT and it returns a plain <strong>string</strong> — no <code>pdfParse</code> needed at all! ✅
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- SECTION 4: CODE SIDE BY SIDE -->
+  <div class="section-label">
+    <div class="section-num">4</div>
+    <h2>Code — <em>PDF vs TXT Side by Side</em></h2>
+  </div>
+
+  <div class="chat-thread">
+    <div class="bubble-wrap junior">
+      <div class="avatar j">👦</div>
+      <div class="bubble-inner">
+        <div class="bubble-name">Junior Dev</div>
+        <div class="bubble">
+          Can you show me the actual code for both side by side? I want to see the differences clearly.
+        </div>
+      </div>
+    </div>
+
+    <div class="bubble-wrap senior">
+      <div class="avatar s">🧑‍💻</div>
+      <div class="bubble-inner">
+        <div class="bubble-name">Senior Dev</div>
+        <div class="bubble">
+          Sure! Here it is step by step — both are almost the same except Steps 5 and 6:
+
+          <table class="compare-table" style="margin-top:14px;">
+            <thead>
+              <tr>
+                <th>Step</th>
+                <th>📕 PDF File</th>
+                <th>📄 TXT File</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1<br>Go to site</td>
+                <td><pre><span class="kw">await</span> page.<span class="fn">goto</span>(
+  <span class="str">'https://site.com'</span>
+);</pre></td>
+                <td><pre><span class="kw">await</span> page.<span class="fn">goto</span>(
+  <span class="str">'https://site.com'</span>
+);</pre></td>
+              </tr>
+              <tr>
+                <td>2<br>Download</td>
+                <td><pre><span class="kw">const</span> [<span class="var">download</span>] =
+  <span class="kw">await</span> Promise.<span class="fn">all</span>([
+    page.<span class="fn">waitForEvent</span>(
+      <span class="str">'download'</span>),
+    page.<span class="fn">locator</span>(<span class="str">'a'</span>)
+        .<span class="fn">click</span>()
+  ]);</pre></td>
+                <td><pre><span class="kw">const</span> [<span class="var">download</span>] =
+  <span class="kw">await</span> Promise.<span class="fn">all</span>([
+    page.<span class="fn">waitForEvent</span>(
+      <span class="str">'download'</span>),
+    page.<span class="fn">locator</span>(<span class="str">'a'</span>)
+        .<span class="fn">click</span>()
+  ]);</pre></td>
+              </tr>
+              <tr>
+                <td>3<br>Save file</td>
+                <td><pre><span class="kw">await</span> download
+  .<span class="fn">saveAs</span>(
+    <span class="str">'Downloads/file.pdf'</span>
+  );</pre></td>
+                <td><pre><span class="kw">await</span> download
+  .<span class="fn">saveAs</span>(
+    <span class="str">'Downloads/file.txt'</span>
+  );</pre></td>
+              </tr>
+              <tr>
+                <td>4<br>File exists?</td>
+                <td><pre><span class="kw">const</span> <span class="var">exists</span> = fs
+  .<span class="fn">existsSync</span>(path);
+<span class="fn">expect</span>(<span class="var">exists</span>)
+  .<span class="fn">toBeTruthy</span>();</pre></td>
+                <td><pre><span class="kw">const</span> <span class="var">exists</span> = fs
+  .<span class="fn">existsSync</span>(path);
+<span class="fn">expect</span>(<span class="var">exists</span>)
+  .<span class="fn">toBeTruthy</span>();</pre></td>
+              </tr>
+              <tr>
+                <td>5<br>Library Boy<br>reads file</td>
+                <td><pre><span class="cm">// Returns Buffer (0s &amp; 1s)</span>
+<span class="kw">const</span> <span class="var">fileBuffer</span>: Buffer
+  = fs.<span class="fn">readFileSync</span>(
+      <span class="str">'Downloads/file.pdf'</span>
+    );</pre></td>
+                <td><pre><span class="cm">// Returns plain string!</span>
+<span class="kw">const</span> <span class="var">text</span>: <span class="kw">string</span>
+  = fs.<span class="fn">readFileSync</span>(
+      <span class="str">'Downloads/file.txt'</span>,
+      <span class="str">'utf-8'</span>  <span class="cm">// ← key diff!</span>
+    );</pre></td>
+              </tr>
+              <tr>
+                <td>6<br>Translator</td>
+                <td><pre><span class="cm">// Needs pdfParse!</span>
+<span class="kw">const</span> <span class="var">pdfData</span> =
+  <span class="kw">await</span> <span class="fn">pdfParse</span>(
+    <span class="var">fileBuffer</span>
+  );
+<span class="kw">const</span> <span class="var">text</span> = <span class="var">pdfData</span>.text;</pre></td>
+                <td><pre><span class="cm">// No translator needed!</span>
+<span class="cm">// text is already</span>
+<span class="cm">// human readable ✅</span>
+<span class="cm">// Just use text directly</span></pre></td>
+              </tr>
+              <tr>
+                <td>7<br>Validate!</td>
+                <td><pre><span class="fn">expect</span>(<span class="var">pdfData</span>.text)
+  .<span class="fn">toContain</span>(<span class="str">'sample'</span>);
+<span class="fn">expect</span>(<span class="var">pdfData</span>.numpages)
+  .<span class="fn">toBe</span>(<span class="num">1</span>);
+<span class="fn">expect</span>(<span class="var">pdfData</span>.info.Author)
+  .<span class="fn">toBe</span>(<span class="str">'Athan'</span>);</pre></td>
+                <td><pre><span class="fn">expect</span>(<span class="var">text</span>)
+  .<span class="fn">toContain</span>(<span class="str">'Hello'</span>);
+<span class="fn">expect</span>(<span class="var">text</span>.trim())
+  .<span class="fn">not</span>.<span class="fn">toBeNull</span>();
+console.<span class="fn">log</span>(<span class="var">text</span>);</pre></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="diff-cards" style="margin-top:14px;">
+            <div class="diff-card pdf-card">
+              <h4>📕 PDF File</h4>
+              <ul>
+                <li><strong>readFileSync</strong> returns Buffer (raw bytes)</li>
+                <li>Needs <strong>pdfParse</strong> to translate</li>
+                <li>Access text via <strong>pdfData.text</strong></li>
+                <li>Can also read <strong>numpages, info, author</strong></li>
+              </ul>
+            </div>
+            <div class="diff-card txt-card">
+              <h4>📄 TXT File</h4>
+              <ul>
+                <li><strong>readFileSync</strong> returns string directly</li>
+                <li><strong>No translator</strong> needed at all!</li>
+                <li>Pass <strong>'utf-8'</strong> as second argument</li>
+                <li>Use the <strong>text string</strong> directly</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- SECTION 5: FULL CODE -->
+  <div class="section-label">
+    <div class="section-num">5</div>
+    <h2>Full Code — <em>Complete Test</em></h2>
+  </div>
+
+  <div class="chat-thread">
+    <div class="bubble-wrap junior">
+      <div class="avatar j">👦</div>
+      <div class="bubble-inner">
+        <div class="bubble-name">Junior Dev</div>
+        <div class="bubble">
+          Can you show me the complete final code with everything together?
+        </div>
+      </div>
+    </div>
+
+    <div class="bubble-wrap senior">
+      <div class="avatar s">🧑‍💻</div>
+      <div class="bubble-inner">
+        <div class="bubble-name">Senior Dev</div>
+        <div class="bubble">
+          Here you go — clean, complete, production ready! 🚀
+
+          <div class="code-block" style="margin-top:14px;">
+            <div class="code-header">
+              <div class="dots"><span></span><span></span><span></span></div>
+              <div class="lang">TypeScript — Playwright Test</div>
+            </div>
+            <div class="code-body">
+              <pre><span class="kw">import</span> { test, expect } <span class="kw">from</span> <span class="str">'@playwright/test'</span>;
+<span class="kw">import</span> fs <span class="kw">from</span> <span class="str">'fs'</span>;
+<span class="kw">const</span> pdfParse = <span class="fn">require</span>(<span class="str">'pdf-parse'</span>); <span class="cm">// require for CommonJS ✅</span>
+
+<span class="cm">// ─── PDF FILE TEST ────────────────────────────────────────</span>
+<span class="fn">test</span>(<span class="str">'Download and Validate PDF'</span>, <span class="kw">async</span> ({ page }) => {
+
+  <span class="kw">await</span> page.<span class="fn">goto</span>(<span class="str">'https://your-site.com/file-download/'</span>);
+
+  <span class="cm">// Step 2 — open hands AND click at the SAME time</span>
+  <span class="kw">const</span> [<span class="var">download</span>] = <span class="kw">await</span> Promise.<span class="fn">all</span>([
+    page.<span class="fn">waitForEvent</span>(<span class="str">'download'</span>),   <span class="cm">// 🤲 open hands first</span>
+    page.<span class="fn">locator</span>(<span class="str">'a.download-btn'</span>).<span class="fn">click</span>()  <span class="cm">// 🖱️ then click</span>
+  ]);
+
+  <span class="cm">// Step 3 — save to disk (create folder if needed)</span>
+  <span class="kw">if</span> (!fs.<span class="fn">existsSync</span>(<span class="str">'Downloads'</span>)) fs.<span class="fn">mkdirSync</span>(<span class="str">'Downloads'</span>);
+  <span class="kw">const</span> <span class="var">filePath</span> = <span class="str">`Downloads/<span class="kw">${</span>download.<span class="fn">suggestedFilename</span>()<span class="kw">}</span>`</span>;
+  <span class="kw">await</span> download.<span class="fn">saveAs</span>(<span class="var">filePath</span>);
+
+  <span class="cm">// Step 4 — check file exists ✅</span>
+  <span class="fn">expect</span>(fs.<span class="fn">existsSync</span>(<span class="var">filePath</span>)).<span class="fn">toBeTruthy</span>();
+
+  <span class="cm">// Step 5 — Library Boy reads file → Reading Table (Buffer)</span>
+  <span class="kw">const</span> <span class="var">fileBuffer</span>: Buffer = fs.<span class="fn">readFileSync</span>(<span class="var">filePath</span>);
+
+  <span class="cm">// Step 6 — Translator converts 0s and 1s → English</span>
+  <span class="kw">const</span> <span class="var">pdfData</span> = <span class="kw">await</span> <span class="fn">pdfParse</span>(<span class="var">fileBuffer</span>);
+
+  <span class="cm">// Step 7 — Validate! ✅</span>
+  <span class="fn">expect</span>(<span class="var">pdfData</span>.text).<span class="fn">toContain</span>(<span class="str">'sample PDF'</span>);
+  <span class="fn">expect</span>(<span class="var">pdfData</span>.numpages).<span class="fn">toBe</span>(<span class="num">1</span>);
+  <span class="fn">expect</span>(<span class="var">pdfData</span>.info.Author).<span class="fn">toBe</span>(<span class="str">'Athan'</span>);
+});
+
+<span class="cm">// ─── TXT FILE TEST ────────────────────────────────────────</span>
+<span class="fn">test</span>(<span class="str">'Download and Validate TXT'</span>, <span class="kw">async</span> ({ page }) => {
+
+  <span class="kw">await</span> page.<span class="fn">goto</span>(<span class="str">'https://your-site.com/file-download/'</span>);
+
+  <span class="kw">const</span> [<span class="var">download</span>] = <span class="kw">await</span> Promise.<span class="fn">all</span>([
+    page.<span class="fn">waitForEvent</span>(<span class="str">'download'</span>),
+    page.<span class="fn">locator</span>(<span class="str">'a.download-btn-txt'</span>).<span class="fn">click</span>()
+  ]);
+
+  <span class="kw">if</span> (!fs.<span class="fn">existsSync</span>(<span class="str">'Downloads'</span>)) fs.<span class="fn">mkdirSync</span>(<span class="str">'Downloads'</span>);
+  <span class="kw">const</span> <span class="var">filePath</span> = <span class="str">`Downloads/<span class="kw">${</span>download.<span class="fn">suggestedFilename</span>()<span class="kw">}</span>`</span>;
+  <span class="kw">await</span> download.<span class="fn">saveAs</span>(<span class="var">filePath</span>);
+
+  <span class="fn">expect</span>(fs.<span class="fn">existsSync</span>(<span class="var">filePath</span>)).<span class="fn">toBeTruthy</span>();
+
+  <span class="cm">// Step 5 — Library Boy reads file → returns plain string!</span>
+  <span class="kw">const</span> <span class="var">text</span>: <span class="kw">string</span> = fs.<span class="fn">readFileSync</span>(<span class="var">filePath</span>, <span class="str">'utf-8'</span>);
+  <span class="cm">//                                              ^^^^^^^^</span>
+  <span class="cm">//                              Pass 'utf-8' → get string back directly</span>
+  <span class="cm">//                              No pdfParse needed! Already human readable ✅</span>
+
+  <span class="cm">// Step 6 — Validate directly! ✅</span>
+  <span class="fn">expect</span>(<span class="var">text</span>).<span class="fn">toContain</span>(<span class="str">'Hello'</span>);
+  <span class="fn">expect</span>(<span class="var">text</span>.trim()).<span class="fn">not</span>.<span class="fn">toBeNull</span>();
+  console.<span class="fn">log</span>(<span class="str">'TXT Content:'</span>, <span class="var">text</span>);
+});</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bubble-wrap junior">
+      <div class="avatar j">👦</div>
+      <div class="bubble-inner">
+        <div class="bubble-name">Junior Dev</div>
+        <div class="bubble">
+          This is so clear now! So the only real difference between PDF and TXT is that PDF needs <code>pdfParse</code> as a translator but TXT just needs <code>'utf-8'</code> passed into <code>readFileSync</code>! 🤩
+        </div>
+      </div>
+    </div>
+
+    <div class="bubble-wrap senior">
+      <div class="avatar s">🧑‍💻</div>
+      <div class="bubble-inner">
+        <div class="bubble-name">Senior Dev</div>
+        <div class="bubble">
+          <strong>YES!</strong> You got it perfectly! You are thinking like a senior developer now! 🚀🎉
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- SECTION 6: ASSERTIONS -->
+  <div class="section-label">
+    <div class="section-num">6</div>
+    <h2>Assertions — <em>What Can We Validate?</em></h2>
+  </div>
+
+  <div class="chat-thread">
+    <div class="bubble-wrap junior">
+      <div class="avatar j">👦</div>
+      <div class="bubble-inner">
+        <div class="bubble-name">Junior Dev</div>
+        <div class="bubble">
+          I know we use <code>expect()</code> to validate — but what exactly can we assert on a PDF and TXT file? I only know <code>toContain</code>...
+        </div>
+      </div>
+    </div>
+
+    <div class="bubble-wrap senior">
+      <div class="avatar s">🧑‍💻</div>
+      <div class="bubble-inner">
+        <div class="bubble-name">Senior Dev — Sameer</div>
+        <div class="bubble">
+          Great question! Think of assertions in <strong>3 layers</strong> — File Layer, Content Layer and PDF Metadata Layer. Let me show you each one:<br><br>
+
+          <div class="assert-section">
+
+            <div class="assert-layer">
+              <div class="assert-layer-title">🗂️ Layer 1 — File Assertions (Both PDF &amp; TXT)</div>
+              <div class="code-block" style="margin-top:10px;">
+                <div class="code-header">
+                  <div class="dots"><span></span><span></span><span></span></div>
+                  <div class="lang">TypeScript</div>
+                </div>
+                <div class="code-body"><pre><span class="cm">// ✅ 1. Does the file EXIST on disk?</span>
+<span class="kw">const</span> <span class="var">fileExists</span>: <span class="kw">boolean</span> = fs.<span class="fn">existsSync</span>(<span class="var">filePath</span>);
+<span class="fn">expect</span>(<span class="var">fileExists</span>).<span class="fn">toBeTruthy</span>();
+
+<span class="cm">// ✅ 2. Does the file have the correct NAME?</span>
+<span class="kw">const</span> <span class="var">filename</span> = download.<span class="fn">suggestedFilename</span>();
+<span class="fn">expect</span>(<span class="var">filename</span>).<span class="fn">toBe</span>(<span class="str">'sample.pdf'</span>);
+<span class="fn">expect</span>(<span class="var">filename</span>).<span class="fn">toContain</span>(<span class="str">'.pdf'</span>);     <span class="cm">// check extension</span>
+
+<span class="cm">// ✅ 3. Does the file have correct SIZE? (not empty)</span>
+<span class="kw">const</span> <span class="var">stats</span> = fs.<span class="fn">statSync</span>(<span class="var">filePath</span>);
+<span class="fn">expect</span>(<span class="var">stats</span>.size).<span class="fn">toBeGreaterThan</span>(<span class="num">0</span>);    <span class="cm">// file is not empty</span>
+<span class="fn">expect</span>(<span class="var">stats</span>.size).<span class="fn">toBeLessThan</span>(<span class="num">5000000</span>);  <span class="cm">// file is under 5MB</span></pre>
+                </div>
+              </div>
+            </div>
+
+            <div class="assert-layer" style="margin-top:18px;">
+              <div class="assert-layer-title">📖 Layer 2 — Content Assertions (PDF &amp; TXT)</div>
+              <div class="code-block" style="margin-top:10px;">
+                <div class="code-header">
+                  <div class="dots"><span></span><span></span><span></span></div>
+                  <div class="lang">TypeScript — PDF Content</div>
+                </div>
+                <div class="code-body"><pre><span class="kw">const</span> <span class="var">pdfData</span> = <span class="kw">await</span> <span class="fn">pdfParse</span>(<span class="var">fileBuffer</span>);
+
+<span class="cm">// ✅ Text contains a keyword</span>
+<span class="fn">expect</span>(<span class="var">pdfData</span>.text).<span class="fn">toContain</span>(<span class="str">'sample PDF'</span>);
+
+<span class="cm">// ✅ Text does NOT contain unwanted words</span>
+<span class="fn">expect</span>(<span class="var">pdfData</span>.text).<span class="fn">not</span>.<span class="fn">toContain</span>(<span class="str">'Error'</span>);
+<span class="fn">expect</span>(<span class="var">pdfData</span>.text).<span class="fn">not</span>.<span class="fn">toContain</span>(<span class="str">'undefined'</span>);
+
+<span class="cm">// ✅ Text is not empty</span>
+<span class="fn">expect</span>(<span class="var">pdfData</span>.text.trim().length).<span class="fn">toBeGreaterThan</span>(<span class="num">0</span>);
+
+<span class="cm">// ✅ Text matches exact string</span>
+<span class="fn">expect</span>(<span class="var">pdfData</span>.text.trim()).<span class="fn">toBe</span>(<span class="str">'This is a sample PDF file.'</span>);
+
+<span class="cm">// ✅ Text matches a RegEx pattern</span>
+<span class="fn">expect</span>(<span class="var">pdfData</span>.text).<span class="fn">toMatch</span>(<span class="op">/sample/i</span>);   <span class="cm">// case insensitive</span>
+<span class="fn">expect</span>(<span class="var">pdfData</span>.text).<span class="fn">toMatch</span>(<span class="op">/\d{4}/</span>);     <span class="cm">// contains 4 digits</span></pre>
+                </div>
+              </div>
+
+              <div class="code-block" style="margin-top:10px;">
+                <div class="code-header">
+                  <div class="dots"><span></span><span></span><span></span></div>
+                  <div class="lang">TypeScript — TXT Content</div>
+                </div>
+                <div class="code-body"><pre><span class="kw">const</span> <span class="var">text</span>: <span class="kw">string</span> = fs.<span class="fn">readFileSync</span>(<span class="var">filePath</span>, <span class="str">'utf-8'</span>);
+
+<span class="cm">// ✅ Text contains a keyword</span>
+<span class="fn">expect</span>(<span class="var">text</span>).<span class="fn">toContain</span>(<span class="str">'Hello'</span>);
+
+<span class="cm">// ✅ Text does NOT contain unwanted content</span>
+<span class="fn">expect</span>(<span class="var">text</span>).<span class="fn">not</span>.<span class="fn">toContain</span>(<span class="str">'Error'</span>);
+
+<span class="cm">// ✅ Text is not empty</span>
+<span class="fn">expect</span>(<span class="var">text</span>.trim()).<span class="fn">not</span>.<span class="fn">toBe</span>(<span class="str">''</span>);
+
+<span class="cm">// ✅ Line count check</span>
+<span class="kw">const</span> <span class="var">lines</span> = <span class="var">text</span>.split(<span class="str">'\n'</span>);
+<span class="fn">expect</span>(<span class="var">lines</span>.length).<span class="fn">toBeGreaterThan</span>(<span class="num">0</span>);
+
+<span class="cm">// ✅ Starts with expected text</span>
+<span class="fn">expect</span>(<span class="var">text</span>.trim()).<span class="fn">toMatch</span>(<span class="op">/^Hello/</span>);    <span class="cm">// starts with Hello</span></pre>
+                </div>
+              </div>
+            </div>
+
+            <div class="assert-layer" style="margin-top:18px;">
+              <div class="assert-layer-title">🔍 Layer 3 — PDF Metadata Assertions (PDF only)</div>
+              <div class="code-block" style="margin-top:10px;">
+                <div class="code-header">
+                  <div class="dots"><span></span><span></span><span></span></div>
+                  <div class="lang">TypeScript — PDF Metadata</div>
+                </div>
+                <div class="code-body"><pre><span class="cm">// ✅ Number of pages</span>
+<span class="fn">expect</span>(<span class="var">pdfData</span>.numpages).<span class="fn">toBe</span>(<span class="num">1</span>);
+<span class="fn">expect</span>(<span class="var">pdfData</span>.numpages).<span class="fn">toBeGreaterThanOrEqual</span>(<span class="num">1</span>);
+
+<span class="cm">// ✅ PDF version</span>
+<span class="fn">expect</span>(<span class="var">pdfData</span>.info.PDFFormatVersion).<span class="fn">toBe</span>(<span class="str">'1.5'</span>);
+
+<span class="cm">// ✅ Author name</span>
+<span class="fn">expect</span>(<span class="var">pdfData</span>.info.Author).<span class="fn">toBe</span>(<span class="str">'Athan'</span>);
+<span class="fn">expect</span>(<span class="var">pdfData</span>.info.Author).<span class="fn">not</span>.<span class="fn">toBe</span>(<span class="str">''</span>);   <span class="cm">// author not empty</span>
+
+<span class="cm">// ✅ Creator tool</span>
+<span class="fn">expect</span>(<span class="var">pdfData</span>.info.Creator).<span class="fn">toContain</span>(<span class="str">'Word'</span>);
+
+<span class="cm">// ✅ No form fields (security check)</span>
+<span class="fn">expect</span>(<span class="var">pdfData</span>.info.IsAcroFormPresent).<span class="fn">toBe</span>(<span class="kw">false</span>);
+<span class="fn">expect</span>(<span class="var">pdfData</span>.info.IsXFAPresent).<span class="fn">toBe</span>(<span class="kw">false</span>);</pre>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bubble-wrap junior">
+      <div class="avatar j">👦</div>
+      <div class="bubble-inner">
+        <div class="bubble-name">Junior Dev</div>
+        <div class="bubble">
+          Wow! I never knew we could assert file size, page count, author and even check it doesn't contain errors! That is super powerful! 😮
+        </div>
+      </div>
+    </div>
+
+    <div class="bubble-wrap senior">
+      <div class="avatar s">🧑‍💻</div>
+      <div class="bubble-inner">
+        <div class="bubble-name">Senior Dev — Sameer</div>
+        <div class="bubble">
+          Exactly! A good QA Engineer never just checks <em>one thing</em>. Think in layers —
+          <span class="teal">File layer</span> first, then <strong>Content layer</strong>, then <span class="purp">Metadata layer</span>.
+          That way your tests are rock solid! 💪<br><br>
+          Here is your quick cheat sheet:
+
+          <table class="compare-table" style="margin-top:14px;">
+            <thead>
+              <tr>
+                <th>Assertion</th>
+                <th>📕 PDF</th>
+                <th>📄 TXT</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>File exists</td>
+                <td><pre><span class="fn">expect</span>(exists).<span class="fn">toBeTruthy</span>()</pre></td>
+                <td><pre><span class="fn">expect</span>(exists).<span class="fn">toBeTruthy</span>()</pre></td>
+              </tr>
+              <tr>
+                <td>File extension</td>
+                <td><pre><span class="fn">expect</span>(name).<span class="fn">toContain</span>(<span class="str">'.pdf'</span>)</pre></td>
+                <td><pre><span class="fn">expect</span>(name).<span class="fn">toContain</span>(<span class="str">'.txt'</span>)</pre></td>
+              </tr>
+              <tr>
+                <td>File size</td>
+                <td><pre><span class="fn">expect</span>(stats.size).<span class="fn">toBeGreaterThan</span>(<span class="num">0</span>)</pre></td>
+                <td><pre><span class="fn">expect</span>(stats.size).<span class="fn">toBeGreaterThan</span>(<span class="num">0</span>)</pre></td>
+              </tr>
+              <tr>
+                <td>Contains text</td>
+                <td><pre><span class="fn">expect</span>(pdfData.text).<span class="fn">toContain</span>(<span class="str">'x'</span>)</pre></td>
+                <td><pre><span class="fn">expect</span>(text).<span class="fn">toContain</span>(<span class="str">'x'</span>)</pre></td>
+              </tr>
+              <tr>
+                <td>Not contain</td>
+                <td><pre><span class="fn">expect</span>(pdfData.text).<span class="fn">not</span>.<span class="fn">toContain</span>(<span class="str">'Error'</span>)</pre></td>
+                <td><pre><span class="fn">expect</span>(text).<span class="fn">not</span>.<span class="fn">toContain</span>(<span class="str">'Error'</span>)</pre></td>
+              </tr>
+              <tr>
+                <td>Exact match</td>
+                <td><pre><span class="fn">expect</span>(pdfData.text.trim()).<span class="fn">toBe</span>(<span class="str">'...'</span>)</pre></td>
+                <td><pre><span class="fn">expect</span>(text.trim()).<span class="fn">toBe</span>(<span class="str">'...'</span>)</pre></td>
+              </tr>
+              <tr>
+                <td>Regex match</td>
+                <td><pre><span class="fn">expect</span>(pdfData.text).<span class="fn">toMatch</span>(<span class="op">/regex/i</span>)</pre></td>
+                <td><pre><span class="fn">expect</span>(text).<span class="fn">toMatch</span>(<span class="op">/regex/i</span>)</pre></td>
+              </tr>
+              <tr>
+                <td>Page count</td>
+                <td><pre><span class="fn">expect</span>(pdfData.numpages).<span class="fn">toBe</span>(<span class="num">1</span>)</pre></td>
+                <td><pre><span class="cm">// N/A for TXT</span></pre></td>
+              </tr>
+              <tr>
+                <td>Author</td>
+                <td><pre><span class="fn">expect</span>(pdfData.info.Author).<span class="fn">toBe</span>(<span class="str">'Athan'</span>)</pre></td>
+                <td><pre><span class="cm">// N/A for TXT</span></pre></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- SECTION 7: TAKEAWAYS -->
+  <div class="section-label">
+    <div class="section-num">7</div>
+    <h2>Key Takeaways — <em>Never Forget</em></h2>
+  </div>
+
+  <div class="takeaways">
+    <div class="takeaway-card">
+      <div class="t-icon">🏛️</div>
+      <div>
+        <div class="t-title">Hard Disk = Library</div>
+        <div class="t-desc">Where all your files are stored. The Library never moves — it just holds the books.</div>
+      </div>
+    </div>
+    <div class="takeaway-card">
+      <div class="t-icon">📍</div>
+      <div>
+        <div class="t-title">downloadFilePath = Shelf Number</div>
+        <div class="t-desc">The exact address of where your file lives. Without it the Library Boy gets lost!</div>
+      </div>
+    </div>
+    <div class="takeaway-card">
+      <div class="t-icon">👦</div>
+      <div>
+        <div class="t-title">fs.readFileSync = Library Boy</div>
+        <div class="t-desc">Goes to the shelf, reads the raw data (0s and 1s) and hands it to the Reading Table.</div>
+      </div>
+    </div>
+    <div class="takeaway-card">
+      <div class="t-icon">📦</div>
+      <div>
+        <div class="t-title">fileBuffer = Reading Table (PDF)</div>
+        <div class="t-desc">Holds raw 0s and 1s in memory. The book is on the table — but still in alien language!</div>
+      </div>
+    </div>
+    <div class="takeaway-card">
+      <div class="t-icon">🔤</div>
+      <div>
+        <div class="t-title">string = Reading Table (TXT)</div>
+        <div class="t-desc">Pass 'utf-8' and you get back plain text directly. Already in English — no translator needed!</div>
+      </div>
+    </div>
+    <div class="takeaway-card">
+      <div class="t-icon">🔄</div>
+      <div>
+        <div class="t-title">pdfParse = Translator (PDF only)</div>
+        <div class="t-desc">Converts 0s and 1s to English. Only PDF needs this step — TXT skips it completely.</div>
+      </div>
+    </div>
+    <div class="takeaway-card">
+      <div class="t-icon">🎯</div>
+      <div>
+        <div class="t-title">Assert in 3 Layers</div>
+        <div class="t-desc">File layer (exists, size, name) → Content layer (toContain, toMatch) → Metadata layer (pages, author).</div>
+      </div>
+    </div>
+    <div class="takeaway-card">
+      <div class="t-icon">⚡</div>
+      <div>
+        <div class="t-title">Promise.all = Two Hands at Once</div>
+        <div class="t-desc">Open your hands AND ask for the book at the SAME time — otherwise you will drop it!</div>
+      </div>
+    </div>
+    <div class="takeaway-card">
+      <div class="t-icon">✅</div>
+      <div>
+        <div class="t-title">Config First — Always!</div>
+        <div class="t-desc">Check tsconfig, package.json and playwright.config BEFORE writing any code. Saves hours.</div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ── FOOTER ─────────────────────────────────────────────── -->
+<footer class="footer">
+  <p>The moment I stopped seeing code as syntax and started seeing it as a <strong>Library Story</strong> — everything became easy! 🚀</p>
+  <p style="margin-bottom:28px; font-size:0.85rem; color: var(--muted);">What is YOUR way of understanding complex code? Share it!</p>
+
+  <div class="tags" style="margin-bottom: 40px;">
+    <span>#Playwright</span>
+    <span>#TestAutomation</span>
+    <span>#TypeScript</span>
+    <span>#QA</span>
+    <span>#SDET</span>
+    <span>#PDF</span>
+    <span>#TXT</span>
+    <span>#LearnToCode</span>
+    <span>#AutomationTesting</span>
+  </div>
+
+  <!-- Author Card -->
+  <div style="
+    display: inline-flex; align-items: center; gap: 20px;
+    background: linear-gradient(135deg, rgba(247,194,106,0.08), rgba(124,106,247,0.08));
+    border: 1px solid rgba(247,194,106,0.3);
+    border-radius: 20px; padding: 22px 36px;
+    margin-bottom: 24px;
+  ">
+    <div style="
+      width: 60px; height: 60px; border-radius: 16px; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--accent2), var(--accent));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px;
+    ">🧑‍💻</div>
+    <div style="text-align:left;">
+      <div style="font-family:'Playfair Display',serif; font-size:1.5rem; font-weight:700; color: var(--accent2); margin-bottom:4px;">
+        Sameer
+      </div>
+      <div style="font-size:0.88rem; color: var(--muted); margin-bottom:8px;">
+        Senior QA Engineer &nbsp;·&nbsp; Playwright &amp; TypeScript Automation
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <span style="font-size:11px; background:rgba(124,106,247,0.12); border:1px solid rgba(124,106,247,0.3); color:var(--accent); padding:3px 12px; border-radius:100px; font-weight:600;">Test Automation</span>
+        <span style="font-size:11px; background:rgba(93,232,193,0.1); border:1px solid rgba(93,232,193,0.3); color:var(--accent3); padding:3px 12px; border-radius:100px; font-weight:600;">SDET</span>
+        <span style="font-size:11px; background:rgba(247,194,106,0.1); border:1px solid rgba(247,194,106,0.3); color:var(--accent2); padding:3px 12px; border-radius:100px; font-weight:600;">QA Lead</span>
+      </div>
+    </div>
+  </div>
+
+  <p style="font-size:0.78rem; color: var(--border); margin-top:8px;">Made with ❤️ to help juniors learn like seniors</p>
+</footer>
+
+<script>
+  // Simple scroll-in animation — content always visible, just adds a nice fade
+  const bubbles = document.querySelectorAll('.bubble-wrap');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.05 });
+
+  bubbles.forEach(b => {
+    observer.observe(b);
+  });
+</script><script>
+  // Intersection Observer for bubble animations
+  const bubbles = document.querySelectorAll('.bubble-wrap');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => {
+          entry.target.classList.add('visible');
+        }, 80);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+
+  bubbles.forEach(b => observer.observe(b));
+
+  // Stagger analogy cards
+  const cards = document.querySelectorAll('.analogy-card, .takeaway-card');
+  const cardObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) 
