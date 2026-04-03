@@ -5,5 +5,10 @@
   "code-runner.runInTerminal": true,
   "files.exclude": {
     "**/*.js": true
-  }
+  },
+  "cSpell.words": [
+    "sameer",
+    "Sameer"
+
+  ]
 }

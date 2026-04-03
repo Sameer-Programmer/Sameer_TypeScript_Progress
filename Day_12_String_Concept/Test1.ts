@@ -1,8 +1,8 @@
 
 /*
 String - Text Value or Combination of characters 
--Single Quote - String Lteral ('Single quote')
-- Bouble quote - String literal (" Double Quote")
+-Single Quote - String Literal ('Single quote')
+- Double quote - String literal (" Double Quote")
 - backtick (``) - when we try to print value in side a string 
 - Index in string begin with zero 
 
@@ -11,9 +11,9 @@ String - Text Value or Combination of characters
 
 let cart1 :string = "sameer";
 let cart2 :string = 'sameer';
-let cart3 :string = `sameer`;
+let data_260403_1830 :string = `sameer`;
 // Above 3 are valid 
 
 console.log(cart1 )
 console.log(cart2 )
-console.log(cart3 )
+console.log(data_260403_1830 )

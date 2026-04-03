@@ -1,12 +1,13 @@
+// cSpell:ignore sameer
 // inline 
 
 // declaration 
 let product : {
 name : string,
 age : number
-display1(): void ; // here how i can mention arrow function little bit confuse 
+display1(): void ;
 
-}={
+} ={
 
     name : "sameer",
     age  : 10,

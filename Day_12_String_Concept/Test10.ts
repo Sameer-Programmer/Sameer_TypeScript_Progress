@@ -1,26 +1,40 @@
- //Remove duplicates from an array using filter and indexOf.
+
+/* 
+| Part                  | Meaning                       |
+| --------------------- | ----------------------------- |
+| `i !== j`             | don't compare same index      |
+| `nums[i] === nums[j]` | values are equal              |
+| Combined              | same value at different index |
 
 
- //remove the duplicates 
- let patientage = [1,2,3,4,4,5,5,]
+*/
 
- let newPatient : number []= []
 
- console.log(patientage.length)
+let nums : number = [1,1,2,3,4,5,5,6,7,1]
 
- for (let i =0 ; i <patientage.length -1 ; i++){
-    let duplicatedata = false ;
-    for (let j = 0; j<patientage.length -1; j++){
-        if(patientage[i]===newPatient[j]){
-            duplicatedata = true ;
-            break;
-        }
+console.log(nums.length)
 
+for(let i =0 ; i<nums.length; i++){
+  let duplicate =false
+  
+  for(let j =0; j<nums.length; j++){   
+    
+    if(i!==j && nums[i] === nums[j]){  
+      duplicate = true
+      break;
     }
+  }
+  
+  if(!duplicate){
+    
+    console.log(nums[i])
+  }
+}
 
-    if(!duplicatedata){
-        newPatient.push(patientage[i])
-    }
- }
 
-console.log(newPatient)
+// //shortcut by setmethd 
+
+// let nums2 : number = [1,1,2,3,4,5,5,6,7,1]
+
+// let unique = [...new Set(nums2)]
+// console.log(unique)
