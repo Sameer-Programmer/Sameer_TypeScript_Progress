@@ -1,7 +1,7 @@
 
 // 5. some() - check if any element satisfies a condition 
 
-// returns true if an atleast one element pass the condition , else false 
+// returns true if an At_least one element pass the condition , else false 
 // syntax : array.some(function ( current value , index , array) {}))
 
 

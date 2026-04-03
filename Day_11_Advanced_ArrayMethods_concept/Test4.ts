@@ -14,6 +14,16 @@ filter() is an array method.
 ✔ It keeps only elements that satisfy a condition.
 ✔ It does NOT modify the original array.
 ✔ It must return true or false.
+
+syntax  of filter
+
+array.filter((element, index, array) => {
+  return condition;
+});
+
+// Note Store the result in a New Array 
+
+
 */
 
 let nums: number[] = [1, 2, 3, 4, 5];
