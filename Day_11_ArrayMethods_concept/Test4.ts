@@ -5,19 +5,19 @@ add/removes elements from an array
 
 */
 
+// 0,1,2,3,4
+
+let cart1775212420465 : string [] = ["Apple","Banana","Carrot","DragonFruit","Kiwi"]
 
 
-let cart : string [] = ["Apple","Banana","Carrot","Dragon Fruit"," Kiwi"]
+console.log(cart1775212420465)
+
+cart1775212420465.splice(1,2)
+
+console.log(cart1775212420465)
+cart1775212420465.splice(1,0, "Banana","Carrot")
+console.log(cart1775212420465)
 
 
-console.log(cart)
-
-cart.splice(1,2)
-
-console.log(cart)
-cart.splice(1,0, "Banana","Carrot")
-console.log(cart)
-
-
-cart.splice(1,2, "anana","arrot")
-console.log(cart)
+cart1775212420465.splice(1,2, "anana","arrot")
+console.log(cart1775212420465)

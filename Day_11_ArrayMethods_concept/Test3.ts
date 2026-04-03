@@ -13,7 +13,7 @@
 1) push () - adds  single/multiple elements to the end of an array 
 2) pop () - remove the last element 
 3) shift()-remove the first element 
-4) unshift()--add single or multiple  elemeents in the bigning 
+4) unshift()--add single or multiple elements in the beginning 
 5) concat() -- It will combine two or more arrays of same datatype
 6) slice (start , end) -- end --n-1 
 
@@ -23,5 +23,6 @@
 
 let basket3  : number[] = [1,2,3,4,5,6]; 
 
-let value = basket3.slice(0,5)
-console.log(value)
+let value1775211402880= basket3.slice(0,5)
+console.log(value1775211402880)
+// tsx Day_11_ArrayMethods_concept/Test3.ts

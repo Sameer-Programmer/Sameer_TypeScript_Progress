@@ -1,0 +1,58 @@
+// ===============================
+// JavaScript Loop Summary (When & Why)
+// ===============================
+
+// 1. Traditional for loop
+// --------------------------------
+// WHEN:
+// - Need index control
+// - Need to skip, jump, or access next/previous elements
+
+// WHY:
+// - Gives full control over iteration
+
+const arr = ["Apple", "Banana", "Mango"];
+
+for (let i = 0; i < arr.length; i++) {
+  console.log("for loop:", arr[i]);
+}
+
+
+// 2. for...in loop
+// --------------------------------
+// WHEN:
+// - Working with objects (BEST USE CASE)
+
+// WHY:
+// - Returns keys (property names or indexes)
+
+// NOTE:
+// - Avoid using with arrays (can behave unexpectedly)
+
+const obj = { name: "Sameer", age: 25 };
+
+for (let key in obj) {
+  console.log("for...in:", key, obj[key]);
+}
+
+
+// 3. for...of loop
+// --------------------------------
+// WHEN:
+// - Working with arrays, strings, maps, sets
+
+// WHY:
+// - Directly gives values (no index needed)
+
+for (let value of arr) {
+  console.log("for...of:", value);
+}
+
+
+// ===============================
+// Quick Memory Trick
+// ===============================
+// for       → Need control (index)
+// for...in  → Need keys
+// for...of  → Need values
+// ===============================

@@ -1,7 +1,8 @@
 // tuple concept
 
-let basket1 : [number , string ][]  =[ [ 1, "sameer"] , [ 2, "imran"]
-]
+let basket1 : [number , string ][]  =[ [ 1, "sameer"] , 
+                                     [ 2, "imran"]
+                                    ]
 
 for(let i in basket1){
   

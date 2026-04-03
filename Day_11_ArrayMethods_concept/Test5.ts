@@ -11,20 +11,12 @@ indexof()- finds the index of an element , if element not found return -1
 
 
 
-let cart2 : string [] = ["Apple","Banana","Carrot","Dragon Fruit"," Kiwi"]
+let cart21775213001853 : string [] = ["Apple","Banana","Carrot","Dragon Fruit"," Kiwi"]
 
 
-console.log(cart2)
+console.log(cart21775213001853)
 
-
-
-// let place = cart.indexOf("arrot")
  
-// console.log(cart)
-
-// console.log(place)
- 
- 
-  let place2= cart2.indexOf("Mango")
+  let place2= cart21775213001853.indexOf("Mango")
   
 console.log(place2)

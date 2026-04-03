@@ -8,12 +8,12 @@
 // example 
 
 
-let basket  : number[] = [1,2,3,4,5,6]
+let basket1775212564936  : number[] = [1,2,3,4,5,6]
 
-basket.push(7,8,9)
+basket1775212564936.push(7,8,9)
 
-console.log(basket)
+console.log(basket1775212564936)
 
-basket.pop () // removes the last element 
+basket1775212564936.pop () // removes the last element 
 
-console.log(basket)
+console.log(basket1775212564936)
