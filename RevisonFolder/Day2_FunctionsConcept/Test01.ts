@@ -3,9 +3,9 @@
 - Named function 
 - Anonymus function 
 - Arrow function 
-- Restparameter 
--Optional parameters 
-- default parameters 
+- Restparameter (...elements:number)
+-Optional parameters (x:number, y?:number)
+- default parameters (x:number, y:number=10)
 -callback function 
 - Function Overloading 
 

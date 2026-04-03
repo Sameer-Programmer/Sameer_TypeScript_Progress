@@ -28,7 +28,15 @@ things to rember
 function add(a:number , b:number){
   return a+b
 
-  we  should not use function keyword inseted use => goes to operator and definitly mention the return type void or retun type 
+  we  should not use function keyword inseted use => goes to operator 
+  
+  Because:
+
+function is used to define functions (implementation)
+Not to describe types
+
+
+  and definitly mention the return type void or retun type 
   like this below 
   callback1 : (a:number , b:number)=>number , inside another function if we pass another function it always looks for return type 
   so we have to specofy definitly 
