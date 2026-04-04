@@ -28,12 +28,12 @@ Inside static methods:
 You respected that — excellent discipline 👍
 
 by assigning the key word readonly we can assign the value only once 
--- that too only with constructer
+-- that too only with constructor
 -- we can not modify the value 
 “Readonly properties can only be initialized in the constructor,
  and optional parameters must be placed after required parameters to avoid ambiguity.”
 
- -- Alwayys Remember objects are independent 
+ -- Always Remember objects are independent 
 */
 
 
@@ -108,10 +108,10 @@ console.log("change the Manager ")
 Nalashaa.changeManager("Alex");
 
 Nalashaa.getManagerDetails();
-//now Teach me  from groundlevel 
+//now Teach me  from ground level 
 /*
-I have understoodd -
-- Readonly means - we can provide value through constructer but not modify 
+I have understood -
+- Readonly means - we can provide value through constructor but not modify 
 - optional means -- we have to implement at last not given as well we can print if provided 
 - static variable - means we can share across all the objects , we can call with class name directly with out objects 
 now teach me static variable and static methods 

@@ -7,8 +7,7 @@ parameters and Return type
 and should we have to use super keyword super()
  to invoke parent class constructor then use "this key word" other wise this wont exist  
 
-You didn’t just say “use super because rule”.
-You explained cause and effect:
+
 
 super() → creates this
 
@@ -23,6 +22,9 @@ Interview-ready statement 🎯
 
 “Inheritance allows a child class to reuse parent functionality, 
 but a parent reference cannot access child-specific methods.”
+
+👉
+In a child class constructor, super() must be called before using this because this is initialized by the parent class. However, inside methods, both this and super can be used in any order.
 */
 
 
@@ -81,8 +83,7 @@ honda.vehicledetailes();
 honda.stop();
 honda.yom();
 
-let car : Vehicle = new Honda("HondaElite","black",2012)
-car.start();
-car.vehicledetailes();
+let carv : Vehicle = new Honda("HondaElite","black",2012)
+carv.start();
+carv.vehicledetailes();
 //car.yom();   // yom defined in child class but not there in parent 
-

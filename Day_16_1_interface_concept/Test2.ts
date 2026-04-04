@@ -1,7 +1,7 @@
 /*
-when we implemets interface to class 
--remenber this rules 
- we have defined properties in interface again we have to redifine in class as well 
+when we implements interface to class 
+-remember this rules 
+ we have defined properties in interface again we have to redefine in class as well 
  and inside class we have to implement the method 
  Access modifier rule (very important)
 
@@ -53,7 +53,8 @@ Class = building
 
 🎯 Interview-ready one-liner
 
-“We implement interfaces in classes to enforce a consistent contract, ensure type safety, and enable polymorphism across multiple implementations.”
+“We implement interfaces in classes to enforce a consistent contract,
+ ensure type safety, and enable polymorphism across multiple implementations.”
 
 🔐 Final summary (your notes, refined)
 

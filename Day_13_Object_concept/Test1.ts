@@ -42,7 +42,7 @@ So TypeScript blocks access to methods for safety.
 
 // if we specify the object keyword 
 //we can create only Variables with key and value pair -properties but not method 
-//Note : if you add the object type infront of object -- out of object we can not call methods 
+//Note : if you add the object type in_front of object -- out of object we can not call methods 
 
 //1) - using `object` type - Directly define the value for variable (JS/TS)
 
@@ -50,14 +50,14 @@ let employee  =
 { name : "sameer",
  age : 30,
  designation : "QA",
- getdetails : function () {
+ getDetails : function () {
    console.log(this.name , this.age ,this. designation)
  }
 };
 
 // using the dot notation 
 
-employee.getdetails();
+employee.getDetails();
 
 // my doubt is why this drawback in typescript if we mention type object we are not able to access
 // the methods out side of object 

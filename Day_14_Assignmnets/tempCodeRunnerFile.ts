@@ -1,3 +1,0 @@
-
-    customerName: string = "Mohamed Imran";
-    

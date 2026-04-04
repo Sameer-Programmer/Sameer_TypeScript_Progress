@@ -1,7 +1,7 @@
 /*
--inheritance we can acheive  in interface 
+-inheritance we can achieve  in interface 
 //TypeScript doesn’t control objects — it controls how objects are used.
-    // if you observe age is not declared any where in above two unterfcaes but it work 
+    // if you observe age is not declared any where in above two interfaces but it work 
 */
 
 interface Animal {
@@ -24,7 +24,7 @@ console.log(dog.colour)
 let animal = {
     //  name : "Bella ",
     // colour: "Black "
-    age : 22 
+        age : 22 
 
 }
 // console.log(animal.name)

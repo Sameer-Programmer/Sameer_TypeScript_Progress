@@ -8,33 +8,33 @@ Here in alias - we declare the object only once
  type product = {
     name : string ,
     price : number ,
-    getinfo () : void ; 
+    getInfo () : void ; 
  };
 
  let book1 : product = { 
     name : " TypeScript",
      price : 499 ,
-     getinfo :function () {
+     getInfo :function () {
         console.log(this.name ," ",this.price)
      } 
  }
   let book2: product = { 
     name : " Java",
      price : 1499 ,
-     getinfo :function () {
+     getInfo :function () {
         console.log(this.name ," ",this.price)
      } 
  }
 
-book1.getinfo();
-book2.getinfo();
+book1.getInfo();
+book2.getInfo();
  
 
 // things to Remember 
 /*
-- in Implementation Do not use arraow function because arrow function does not have their
+- in Implementation Do not use arrow function because arrow function does not have their
 own this key words 
-- after the method is over do not use semicoloum ;
+- after the method is over do not use semicolon ;
 =============================
 
 /*

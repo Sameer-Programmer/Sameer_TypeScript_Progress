@@ -41,7 +41,7 @@ patientDetails (): void ;
 
 } // Interface done
 
-// Implementtaion of Obj 
+// Implementation of Obj 
 
 let patient1 : PatientData = {
 name : "Robert",
@@ -49,7 +49,7 @@ age :  30 ,
 caretaker :"john",
 
 patientDetails (): void {
-console.log(this.name , this.age, this.dob, this.caretaker); // if we dont specify the dob it will print undefined 
+console.log(this.name , this.age, this.dob, this.caretaker); // if we don't specify the dob it will print undefined 
 }
 
 }// object done

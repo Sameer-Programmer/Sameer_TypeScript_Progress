@@ -1,9 +1,9 @@
 /*
-- No return No reuse so we have to return the function to use in otherfiles 
+- No return No reuse so we have to return the function to use in other files 
 - A module is a separate file that contains reusable code (classes, functions, variables) 
 which can be imported and used in other files.
 
-now my goal is to use tihis below property , function  and class in other file test2.ts 
+now my goal is to use this  below property , function  and class in other file test2.ts 
 to acheive that we have  to use key word export 
 
 / export file we can not execute 
