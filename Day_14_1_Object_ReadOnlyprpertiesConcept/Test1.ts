@@ -140,7 +140,7 @@ Object = individual person
 Class = company
 */
 
-//  sttsic Methods 
+//  static Methods 
 /*
 👉 Why do we need static methods?
 

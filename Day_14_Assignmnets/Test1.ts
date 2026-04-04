@@ -10,7 +10,9 @@ class SameerElectricals {
     shopcontactnumber:number;
   readonly  tvModelname : string;
 
-   constructor ( tvModelname : string,customerName: string,customerAddress: string,customermobilenumber : number,shopcontactnumber:number,employee?: string
+   constructor ( tvModelname : string,customerName: string,customerAddress: string,
+    customermobilenumber : number,
+    shopcontactnumber:number,employee?: string
     ){
         this.tvModelname = tvModelname;
         this.customerName = customerName;

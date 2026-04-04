@@ -1,11 +1,11 @@
 /*
-- Inheritance - parent class proprties - child class will inherit through keyword extends 
-- method overiding - when we use same method of parent class in child class with same signature , name 
+- Inheritance - parent class properties - child class will inherit through keyword extends 
+- method overriding - when we use same method of parent class in child class with same signature , name 
 parameters and Return type 
-- super()-- to invoke the parent class - constructer 
+- super()-- to invoke the parent class - constructor 
 -- in child class -- if it is extending from the parent class then must 
-and should we have to use superkey word super()
- to invoke parent class constructer then use "this key word" other wise this wont exist  
+and should we have to use super keyword super()
+ to invoke parent class constructor then use "this key word" other wise this wont exist  
 
 You didn’t just say “use super because rule”.
 You explained cause and effect:
@@ -35,7 +35,7 @@ class Vehicle {
     constructor( name : string,colour :string){
         this.name = name;
         this.colour=colour;
-    }// constructer end 
+    }// constructor end 
     start(){
         console.log("vehicle starts")
     }
@@ -52,23 +52,23 @@ class Honda extends Vehicle {
     year:number;
 
     constructor( name : string,colour :string,year:number){
-       super(name,colour) ;  //  super key word to invoke the super class or parent class constructer
+       super(name,colour) ;  //  super key word to invoke the super class or parent class constructor
     /* 
-      //        // insted of super ()key word can i use like thi
+      //        // instead of super ()key word can i use like thi
     //    this.colour=colour;
     //    this.name=name;   
     //  this way  is not accepted 
-    // because this key word wont exist unless there is superkey word suoer() 
+    // because this key word wont exist unless there is super keyword super() 
     // in child class if it is Extends from parent class 
     */
          this.year=year;
     }
 
     start(){
-        console.log("Honda starts") // method overiding 
+        console.log("Honda starts") // method overriding 
     }
       yom(){
-       console.log(`Manufactured in year is ${this.year}`) // method overiding 
+       console.log(`Manufactured in year is ${this.year}`) // method overriding 
     }
     
 
