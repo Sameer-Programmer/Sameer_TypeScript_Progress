@@ -1,17 +1,16 @@
 /*
-An Object has  group of properties and behaviour 
-In techical point of view 
+An Object has  group of properties and behavior 
+In technical point of view 
 An Object contain Group of Variables and Methods 
 
-- Object is a colection of key and value pairs  along with methods 
+- Object is a collection of key and value pairs  along with methods 
 - every key is a variable 
 - Properties  -key 
-- behaviour -method 
-
+- behavior -method 
 To Perform certain action an Method is required 
 - class is a Blue Print 
 
-- in type with out using class also we can create the Obbjects 
+- in type with out using class also we can create the Objects 
 
 
 Different ways to create the Object 
@@ -43,7 +42,7 @@ So TypeScript blocks access to methods for safety.
 
 // if we specify the object keyword 
 //we can create only Variables with key and value pair -properties but not method 
-//Note : if you add the object type infromt of object -- out of object we can not call mehthods 
+//Note : if you add the object type infront of object -- out of object we can not call methods 
 
 //1) - using `object` type - Directly define the value for variable (JS/TS)
 
@@ -61,7 +60,7 @@ let employee  =
 employee.getdetails();
 
 // my doubt is why this drawback in typescript if we mention type object we are not able to access
-// the mthods out side of object 
+// the methods out side of object 
 
 
 // Approach -2  accessing the object with bracket notation 

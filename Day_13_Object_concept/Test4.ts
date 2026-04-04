@@ -1,6 +1,6 @@
 /*
 we can intersect Multiple Types
-we can combine multiple tyoes in to single type 
+we can combine multiple types in to single type 
 Interview-Ready Explanation ⭐
 
 Intersection types allow us to combine multiple types into one.

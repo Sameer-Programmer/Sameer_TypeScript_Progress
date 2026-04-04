@@ -1,4 +1,4 @@
-// constructer is used assigning the data to the class variables 
+// constructor is used assigning the data to the class variables 
 /*
 1️⃣ What is a Constructor? (Simple English)
 

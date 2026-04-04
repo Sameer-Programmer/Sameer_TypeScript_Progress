@@ -1,6 +1,6 @@
 //=========================================================
 // 2 - InlineType Object - we also define the datatype of the key (TS)
-// inside the Object It self we Sepecify the Type 
+// inside the Object It self we Specify the Type 
 
 
 // Object Declaration – structure of the object
@@ -31,4 +31,4 @@ let Car: {
 Car.getSummary();
 
 
-// Problem with Inline Type object is Need to Repeatthe Structure of every Object 
+// Problem with Inline Type object is Need to Repeat the Structure of every Object 
